@@ -23,7 +23,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'name', 'role', 'school', 'phone', 'address', 'password', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+            'fields': ('email', 'name', 'role', 'school', 'phone', 'address', 'password1', 'password2', 'user_permissions'),
         }),
     )
 
@@ -59,6 +59,10 @@ class UserAdmin(BaseUserAdmin):
 
             if obj.role not in ['SCHOOL_ADMIN', 'TEACHER', 'STUDENT']:
                 raise ValidationError("You do not have permission to assign this role.")
+            
+        if request.user.role == 'MAIN_ADMIN' and obj.role == 'SCHOOL_ADMIN':
+            obj.is_staff = True
+
         return super().save_model(request, obj, form, change)
 
 admin.site.register(User, UserAdmin)
