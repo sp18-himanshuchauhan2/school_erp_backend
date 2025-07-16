@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 # Create your models here.
 
@@ -8,6 +8,7 @@ class CustomUserManager(BaseUserManager):
         if not email:
             raise ValueError('Users must have an email address')
         email = self.normalize_email(email)
+        extra_fields.setdefault("username", email.split("@")[0])
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -18,7 +19,7 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
 
-class User(AbstractUser, PermissionsMixin):
+class User(AbstractUser):
     ROLE_CHOICES = [
         ('MAIN_ADMIN', 'Main Admin'),
         ('SCHOOL_ADMIN', 'School Admin'),
@@ -44,4 +45,3 @@ class User(AbstractUser, PermissionsMixin):
     
     def __str__(self):
         return f"{self.name} --> ({self.role})"
-    
