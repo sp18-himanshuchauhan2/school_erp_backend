@@ -8,7 +8,6 @@ class CustomUserManager(BaseUserManager):
         if not email:
             raise ValueError('Users must have an email address')
         email = self.normalize_email(email)
-        extra_fields.setdefault("username", email.split("@")[0])
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -39,9 +38,13 @@ class User(AbstractUser):
 
     objects = CustomUserManager()
 
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'role']
+
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.username = self.email.split('@')[0]
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return f"{self.name} --> ({self.role})"
