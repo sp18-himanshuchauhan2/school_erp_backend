@@ -5,12 +5,11 @@ from schools.models import School
 # Register your models here.
 
 class ClassroomAdmin(admin.ModelAdmin):
-    list_display = ['school', 'class_name', 'section']
+    list_display = ['school', 'class_name', 'section', 'class_teacher']
     search_fields = ['class_name', 'section']
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-
         if request.user.is_superuser:
             return qs
         return qs.filter(school=request.user.school)
