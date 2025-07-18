@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'schools',
     'classrooms',
     'teachers',
+    'subjects',
 ]
 
 AUTH_USER_MODEL = 'users.User'
