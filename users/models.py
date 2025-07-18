@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from schools.models import School
 
 # Create your models here.
 
@@ -31,7 +32,7 @@ class User(AbstractUser):
     phone = models.CharField(max_length=15, null=True, blank=True)
     address = models.TextField(blank=True, null=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-    school = models.ForeignKey('schools.School', on_delete=models.SET_NULL, null=True, blank=True)
+    school = models.ForeignKey(School, on_delete=models.CASCADE, null=True, blank=True)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -47,4 +48,4 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
     
     def __str__(self):
-        return f"{self.name} --> ({self.role})"
+        return f"{self.name} ({self.role})"
