@@ -10,5 +10,8 @@ class School(TimeStampedModel):
     contact_number = models.CharField(max_length=15)
     established_year = models.PositiveIntegerField()
 
+    class Meta:
+        unique_together = ('name', 'address',)
+
     def __str__(self):
         return self.name
