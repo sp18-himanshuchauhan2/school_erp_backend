@@ -11,7 +11,7 @@ class Classroom(models.Model):
     class_teacher = models.ForeignKey(Teacher, on_delete=models.SET_NULL, null=True, blank=True, related_name='classrooms_as_teacher')
 
     class Meta:
-        unique_together = ('school', 'class_name', 'section', 'class_teacher')
+        unique_together = ('school', 'class_name', 'section')
 
     def __str__(self):
         return f"{self.class_name} - {self.section or ''} ({self.school})"
