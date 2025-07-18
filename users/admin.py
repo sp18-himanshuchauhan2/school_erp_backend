@@ -40,12 +40,11 @@ class UserAdmin(BaseUserAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
     
     def formfield_for_choice_field(self, db_field, request, **kwargs):
-        if db_field.name == 'role':
-            if request.user.role == 'SCHOOL_ADMIN' and not request.user.is_superuser:
-                allowed_roles = ['SCHOOL_ADMIN', 'TEACHER', 'STUDENT']
-                kwargs['choices'] = [
-                    (key, label) for key, label in db_field.choices if key in allowed_roles
-                ]
+        if db_field.name == 'role' and request.user.role == 'SCHOOL_ADMIN' and not request.user.is_superuser:
+            allowed_roles = ['SCHOOL_ADMIN', 'TEACHER', 'STUDENT']
+            kwargs['choices'] = [
+                (key, label) for key, label in db_field.choices if key in allowed_roles
+            ]
         return super().formfield_for_choice_field(db_field, request, **kwargs)
     
     def changelist_view(self, request, extra_context = None):
