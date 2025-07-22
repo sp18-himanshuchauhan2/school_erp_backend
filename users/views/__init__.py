@@ -1,2 +1,2 @@
 from .school_admin import SchoolAdminClassroomListView, SchoolAdminClassroomSubjectListView, SchoolAdminSubjectListView, SchoolAdminUserListView
-from .user import CreateUserView, ListUsersView
+from .user import ListCreateUsersView
