@@ -4,6 +4,7 @@ from schools.models import School
 
 # Create your models here.
 
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -13,11 +14,12 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-    
+
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
+
 
 class User(AbstractUser):
     ROLE_CHOICES = [
@@ -32,7 +34,8 @@ class User(AbstractUser):
     phone = models.CharField(max_length=15, null=True, blank=True)
     address = models.TextField(blank=True, null=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-    school = models.ForeignKey(School, on_delete=models.CASCADE, null=True, blank=True)
+    school = models.ForeignKey(
+        School, on_delete=models.CASCADE, null=True, blank=True)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -46,6 +49,6 @@ class User(AbstractUser):
         if not self.username:
             self.username = self.email.split('@')[0]
         super().save(*args, **kwargs)
-    
+
     def __str__(self):
         return f"{self.name} ({self.role})"

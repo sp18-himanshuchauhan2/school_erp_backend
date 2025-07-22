@@ -5,20 +5,24 @@ from subjects.models import Subject, ClassroomSubject
 
 User = get_user_model()
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+
 
 class ClassroomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Classroom
         fields = '__all__'
 
+
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
         fields = '__all__'
+
 
 class ClassroomSubjectSerializer(serializers.ModelSerializer):
     class Meta:

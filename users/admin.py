@@ -6,8 +6,10 @@ from django.core.exceptions import ValidationError
 
 # Register your models here.
 
+
 class UserAdmin(BaseUserAdmin):
-    list_display = ['email', 'name', 'role', 'school', 'is_staff', 'is_superuser']
+    list_display = ['email', 'name', 'role',
+                    'school', 'is_staff', 'is_superuser']
     list_filter = ['role', 'school']
     ordering = ['email']
     search_fields = ['email']
@@ -17,9 +19,10 @@ class UserAdmin(BaseUserAdmin):
         (None, {'fields': ('email', 'password')}),
         ('Personal Info', {'fields': ('name', 'phone', 'address')}),
         ('School Info', {'fields': ('role', 'school')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff',
+         'is_superuser', 'groups', 'user_permissions')}),
     )
-    
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -32,13 +35,14 @@ class UserAdmin(BaseUserAdmin):
         if request.user.role == 'SCHOOL_ADMIN' and not request.user.is_superuser:
             return qs.filter(school=request.user.school)
         return qs
-    
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'school' and request.user.role == 'SCHOOL_ADMIN' and not request.user.is_superuser:
-            kwargs['queryset'] = School.objects.filter(id=request.user.school.id)
+            kwargs['queryset'] = School.objects.filter(
+                id=request.user.school.id)
             kwargs['initial'] = request.user.school
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-    
+
     def formfield_for_choice_field(self, db_field, request, **kwargs):
         if db_field.name == 'role' and request.user.role == 'SCHOOL_ADMIN' and not request.user.is_superuser:
             allowed_roles = ['SCHOOL_ADMIN', 'TEACHER', 'STUDENT']
@@ -46,22 +50,25 @@ class UserAdmin(BaseUserAdmin):
                 (key, label) for key, label in db_field.choices if key in allowed_roles
             ]
         return super().formfield_for_choice_field(db_field, request, **kwargs)
-    
-    def changelist_view(self, request, extra_context = None):
+
+    def changelist_view(self, request, extra_context=None):
         if request.user.role == 'SCHOOL_ADMIN':
-            messages.info(request, f"You are School Admin of {request.user.school.name}")
+            messages.info(
+                request, f"You are School Admin of {request.user.school.name}")
         return super().changelist_view(request, extra_context=extra_context)
-    
+
     def save_model(self, request, obj, form, change):
         if request.user.role == 'SCHOOL_ADMIN' and not request.user.is_superuser:
             obj.school = request.user.school
 
             if obj.role not in ['SCHOOL_ADMIN', 'TEACHER', 'STUDENT']:
-                raise ValidationError("You do not have permission to assign this role.")
-            
+                raise ValidationError(
+                    "You do not have permission to assign this role.")
+
         if request.user.role == 'MAIN_ADMIN' and obj.role == 'SCHOOL_ADMIN':
             obj.is_staff = True
 
         return super().save_model(request, obj, form, change)
+
 
 admin.site.register(User, UserAdmin)

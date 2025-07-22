@@ -3,6 +3,7 @@ from django_extensions.db.models import TimeStampedModel
 
 # Create your models here.
 
+
 class School(TimeStampedModel):
     name = models.CharField(max_length=100)
     address = models.TextField()

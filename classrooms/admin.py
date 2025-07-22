@@ -4,6 +4,7 @@ from schools.models import School
 
 # Register your models here.
 
+
 class ClassroomAdmin(admin.ModelAdmin):
     list_display = ['school', 'class_name', 'section', 'class_teacher']
     search_fields = ['class_name', 'section']
@@ -13,11 +14,13 @@ class ClassroomAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         return qs.filter(school=request.user.school)
-    
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'school' and not request.user.is_superuser:
-            kwargs['queryset'] = School.objects.filter(id=request.user.school.id)
+            kwargs['queryset'] = School.objects.filter(
+                id=request.user.school.id)
             kwargs['initial'] = request.user.school
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-    
+
+
 admin.site.register(Classroom, ClassroomAdmin)

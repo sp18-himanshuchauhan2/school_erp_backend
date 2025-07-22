@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from ..models import ClassroomSubject
 
+
 class ClassroomSubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClassroomSubject
@@ -12,11 +13,13 @@ class ClassroomSubjectSerializer(serializers.ModelSerializer):
         subject = attrs['subject']
 
         if classroom.school != user.school:
-            raise serializers.ValidationError("Classroom does not belong to your school.")
-        
+            raise serializers.ValidationError(
+                "Classroom does not belong to your school.")
+
         if subject.school != user.school:
-            raise serializers.ValidationError("Subject does not belong to your school.")
-        
+            raise serializers.ValidationError(
+                "Subject does not belong to your school.")
+
         return attrs
 
     def create(self, validated_data):
