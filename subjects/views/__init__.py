@@ -1,2 +1,2 @@
-from classroom_subject import ClassroomSubjectListCreateView, ClasroomSubjectDetailView
-from subject import SubjectListCreateView, SubjectDetailView
+from .classroom_subject import ClassroomSubjectListCreateView, ClasroomSubjectDetailView
+from .subject import SubjectListCreateView, SubjectDetailView

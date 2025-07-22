@@ -1,8 +1,8 @@
 from rest_framework import generics, permissions
 from rest_framework_simplejwt.views import TokenObtainPairView
-from ..serializers.school_admin import (
-    UserSerializer, ClassroomSerializer, SubjectSerializer, ClassroomSubjectSerializer
-)
+from ..serializers import UserSerializer
+from subjects.serializers import SubjectSerializer, ClassroomSubjectSerializer
+from classrooms.serializers import ClassroomSerializer
 from ..models import User
 from classrooms.models import Classroom
 from subjects.models import Subject, ClassroomSubject

@@ -1,2 +1,2 @@
-from school_admin import UserSerializer, ClassroomSerializer, ClassroomSubjectSerializer, SubjectSerializer
-from user import UserCreateSerializer, UserListSerializer
+from .school_admin import UserSerializer
+from .user import UserCreateSerializer, UserListSerializer

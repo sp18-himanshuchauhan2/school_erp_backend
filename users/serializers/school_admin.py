@@ -12,19 +12,19 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ClassroomSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Classroom
-        fields = '__all__'
+# class ClassroomSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Classroom
+#         fields = '__all__'
 
 
-class SubjectSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Subject
-        fields = '__all__'
+# class SubjectSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Subject
+#         fields = '__all__'
 
 
-class ClassroomSubjectSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ClassroomSubject
-        fields = '__all__'
+# class ClassroomSubjectSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ClassroomSubject
+#         fields = '__all__'
