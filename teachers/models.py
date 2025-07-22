@@ -1,6 +1,5 @@
 from django.db import models
-from config import settings
-from schools.models import School
+from school_erp_backend import settings
 
 # Create your models here.
 class Teacher(models.Model):
