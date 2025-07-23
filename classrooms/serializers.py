@@ -5,11 +5,12 @@ from teachers.models import Teacher
 
 class ClassroomSerializer(serializers.ModelSerializer):
     class_teacher = serializers.PrimaryKeyRelatedField(
-        queryset=Teacher.objects.all())
+        queryset=Teacher.objects.all(), required=False, allow_null=True)
 
     class Meta:
         model = Classroom
-        fields = '__all__'
+        fields = ['id', 'class_name', 'section', 'class_teacher', 'school']
+        read_only_fields = ['school']
 
     def validate_class_teacher(self, value):
         user_school = self.context['request'].user.school
