@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Classroom
 from schools.models import School
-
+from teachers.models import Teacher
 # Register your models here.
 
 
@@ -20,6 +20,9 @@ class ClassroomAdmin(admin.ModelAdmin):
             kwargs['queryset'] = School.objects.filter(
                 id=request.user.school.id)
             kwargs['initial'] = request.user.school
+        elif db_field.name == 'class_teacher' and not request.user.is_superuser:
+            kwargs['queryset'] = Teacher.objects.filter(
+                user__school=request.user.school)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
