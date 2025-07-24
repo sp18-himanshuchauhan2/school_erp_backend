@@ -4,6 +4,7 @@ from classrooms import views as classroom_views
 from subjects.views import subject as subject_views, classroom_subject as classroom_subject_views
 from teachers import views as teacher_views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from students.views import StudentListCreateAPIView, StudentRetrieveUpdateDeleteAPIView
 
 urlpatterns = [
     # JWT login
@@ -39,4 +40,10 @@ urlpatterns = [
          name='teacher-list-create'),
     path('teacher/<int:pk>/',
          teacher_views.TeacherRetrieveUpdateDestroyView.as_view(), name='teacher-detail'),
+
+    path('students/', StudentListCreateAPIView.as_view(),
+         name='student-list-create'),
+    path('students/<int:pk>/',
+         StudentRetrieveUpdateDeleteAPIView.as_view(), name='student-detail'),
+
 ]
