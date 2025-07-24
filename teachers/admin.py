@@ -24,12 +24,17 @@ class TeacherAdmin(admin.ModelAdmin):
             return Teacher.objects.none()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'user' and not request.user.is_superuser:
-            try:
-                school = School.objects.get(user=request.user)
-                kwargs['queryset'] = User.objects.filter(school=school)
-            except School.DoesNotExist:
-                kwargs['queryset'] = User.objects.none()
+        if db_field.name == 'user':
+            if request.user.is_superuser:
+                kwargs['queryset'] = User.objects.filter(role='TEACHER')
+            else:
+                school = getattr(request.user, 'school', None)
+                if school:
+                    kwargs['queryset'] = User.objects.filter(
+                        role='TEACHER', school=school)
+                else:
+                    kwargs['queryset'] = User.objects.none()
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
