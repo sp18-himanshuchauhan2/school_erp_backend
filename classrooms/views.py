@@ -4,6 +4,7 @@ from .serializers import ClassroomSerializer
 
 
 class ClassroomListCreateView(generics.ListCreateAPIView):
+    queryset = Classroom.objects.all()
     serializer_class = ClassroomSerializer
     permission_classes = [permissions.IsAuthenticated]
 

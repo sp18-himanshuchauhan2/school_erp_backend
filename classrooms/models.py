@@ -10,7 +10,7 @@ class Classroom(models.Model):
         School, on_delete=models.CASCADE, related_name='classrooms')
     class_name = models.CharField(max_length=10)
     section = models.CharField(max_length=10, blank=True, null=True)
-    class_teacher = models.ForeignKey(
+    class_teacher = models.OneToOneField(
         Teacher, on_delete=models.SET_NULL, null=True, blank=True, related_name='classrooms_as_teacher')
 
     class Meta:
