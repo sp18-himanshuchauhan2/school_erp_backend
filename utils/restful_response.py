@@ -1,10 +1,8 @@
 from dataclasses import dataclass
 from rest_framework import status
 from rest_framework.response import Response
-from core.constants.data_constants import ResponseMessages
-from core.constants.db_choices import ErrorMessageInfoLevels
-from core.constants.data_constants import CustomStatusCodes
-
+from .data_constants import ResponseMessages
+from .db_choices import ErrorMessageInfoLevels
 
 @dataclass
 class DisplayMessage:
