@@ -8,6 +8,8 @@ from users.serializers import UserListSerializer
 from .serializers import StudentSerializer
 from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
+from utils.restful_response import send_response
+from utils.data_constants import ResponseMessages
 
 # Create your views here.
 
@@ -25,10 +27,15 @@ class StudentListCreateAPIView(APIView):
         student_data = StudentSerializer(students, many=True).data
         user_data = UserListSerializer(users, many=True).data
 
-        return Response({
+        data = {
             "enrolled_students": student_data,
             "unenrolled_students": user_data
-        })
+        }
+
+        return send_response(
+            data=data,
+            message=ResponseMessages.DATA_FETCH_SUCCESS
+        )
 
     @swagger_auto_schema(request_body=StudentSerializer, responses={201: StudentSerializer()})
     def post(self, request):
@@ -36,8 +43,19 @@ class StudentListCreateAPIView(APIView):
             data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            data = serializer.data
+            return send_response(
+                data=data,
+                status_code=status.HTTP_201_CREATED,
+                message=ResponseMessages.RECORD_CREATED
+            )
+
+        errors = serializer.errors
+        return send_response(
+            data=errors,
+            message=ResponseMessages.RECORD_CREATE_FAILED,
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class StudentRetrieveUpdateDeleteAPIView(APIView):
