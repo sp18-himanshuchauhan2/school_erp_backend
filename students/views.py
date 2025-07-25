@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from utils.restful_response import send_response
 from utils.data_constants import ResponseMessages
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 
@@ -24,12 +25,31 @@ class StudentListCreateAPIView(APIView):
             role='STUDENT', school=school
         ).exclude(id__in=student_users_ids)
 
-        student_data = StudentSerializer(students, many=True).data
-        user_data = UserListSerializer(users, many=True).data
+        # pagination
+        paginator = PageNumberPagination()
+        paginator.page_size = 5
+
+        student_results = paginator.paginate_queryset(students, request)
+        user_results = paginator.paginate_queryset(users, request)
+
+        student_data = StudentSerializer(student_results, many=True).data
+        user_data = UserListSerializer(user_results, many=True).data
 
         data = {
             "enrolled_students": student_data,
-            "unenrolled_students": user_data
+            "unenrolled_students": user_data,
+            "pagination": {
+                "enrolled": {
+                    "count": paginator.page.paginator.count,
+                    "next": paginator.get_next_link(),
+                    "previous": paginator.get_previous_link(),
+                },
+                "unenrolled": {
+                    "count": paginator.page.paginator.count,
+                    "next": paginator.get_next_link(),
+                    "previous": paginator.get_previous_link(),
+                }
+            }
         }
 
         return send_response(
