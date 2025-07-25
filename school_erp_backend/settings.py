@@ -46,6 +46,10 @@ INSTALLED_APPS = [
     'teachers',
     'subjects',
     'drf_yasg',
+    'students',
+    'attendances',
+    'fees',
+    'exams',
 ]
 
 AUTH_USER_MODEL = 'users.User'

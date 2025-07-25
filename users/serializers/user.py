@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from ..models import User
+from django.contrib.auth.models import Group
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -11,12 +12,26 @@ class UserCreateSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        school = self.context['request'].user.school
+        request = self.context['request']
+        school = request.user.school
         password = validated_data.pop('password')
+        role = validated_data.get('role')
+
         user = User(**validated_data)
         user.school = school
         user.set_password(password)
+
+        if role == 'SCHOOL_ADMIN':
+            user.is_staff = True
         user.save()
+
+        if role:
+            try:
+                group = Group.objects.get(name=role.lower())
+                user.groups.add(group)
+                print(f"User added to group: {group.name}")
+            except Group.DoesNotExist:
+                print(f"Group '{role}' does not exist — cannot assign group.")
         return user
 
 
