@@ -26,11 +26,12 @@ class StudentListCreateAPIView(APIView):
         ).exclude(id__in=student_users_ids)
 
         # pagination
-        paginator = PageNumberPagination()
-        paginator.page_size = 5
+        student_paginator = PageNumberPagination()
+        user_paginator = PageNumberPagination()
+        # paginator.page_size = 5
 
-        student_results = paginator.paginate_queryset(students, request)
-        user_results = paginator.paginate_queryset(users, request)
+        student_results = student_paginator.paginate_queryset(students, request)
+        user_results = user_paginator.paginate_queryset(users, request)
 
         student_data = StudentSerializer(student_results, many=True).data
         user_data = UserListSerializer(user_results, many=True).data
@@ -40,21 +41,22 @@ class StudentListCreateAPIView(APIView):
             "unenrolled_students": user_data,
             "pagination": {
                 "enrolled": {
-                    "count": paginator.page.paginator.count,
-                    "next": paginator.get_next_link(),
-                    "previous": paginator.get_previous_link(),
+                    "count": student_paginator.page.paginator.count,
+                    "next": student_paginator.get_next_link(),
+                    "previous": student_paginator.get_previous_link(),
                 },
                 "unenrolled": {
-                    "count": paginator.page.paginator.count,
-                    "next": paginator.get_next_link(),
-                    "previous": paginator.get_previous_link(),
+                    "count": user_paginator.page.paginator.count,
+                    "next": user_paginator.get_next_link(),
+                    "previous": user_paginator.get_previous_link(),
                 }
             }
         }
 
         return send_response(
             data=data,
-            message=ResponseMessages.DATA_FETCH_SUCCESS
+            message=ResponseMessages.DATA_FETCH_SUCCESS,
+            status_code=status.HTTP_200_OK
         )
 
     @swagger_auto_schema(request_body=StudentSerializer, responses={201: StudentSerializer()})
@@ -110,6 +112,6 @@ class StudentRetrieveUpdateDeleteAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        student = self.get_obj(pk, request.user)
+        student = self.get_object(pk, request.user)
         student.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
