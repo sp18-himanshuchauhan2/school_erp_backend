@@ -11,6 +11,8 @@ from schools.models import School
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from utils.restful_response import send_response
+from utils.data_constants import ResponseMessages
 
 
 class ClassroomListCreateView(generics.ListCreateAPIView):
@@ -21,13 +23,57 @@ class ClassroomListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         return Classroom.objects.filter(school=self.request.user.school)
 
+    def perform_create(self, serializer):
+        serializer.save(school=self.request.user.school)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            self.perform_create(serializer)
+        except Exception:
+            return send_response(
+                message="Classroom with the same name and section already exists in your school.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        headers = self.get_success_headers(serializer.data)
+        return send_response(
+            data=serializer.data,
+            status_code=status.HTTP_201_CREATED,
+            headers=headers
+        )
+
 
 class ClassroomDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Classroom.objects.all()
     serializer_class = ClassroomSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Classroom.objects.filter(school=self.request.user.school)
+
+    def perform_update(self, serializer):
+        serializer.save(school=self.request.user.school)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            self.perform_update(serializer)
+        except Exception:
+            return send_response(
+                message="Class teacher already assigned for another class.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        return send_response(
+            data=serializer.data,
+            status_code=status.HTTP_201_CREATED
+        )
 
 
 class ClassroomBulkUploadAPIView(APIView):
@@ -35,17 +81,17 @@ class ClassroomBulkUploadAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-            operation_description="Upload Excel file to bulk create classrooms.",
-            manual_parameters=[
-                openapi.Parameter(
-                    name='file',
-                    in_=openapi.IN_FORM,
-                    type=openapi.TYPE_FILE,
-                    required=True,
-                    description="Excel file (.xlsx) with class_name, section, class_teacher",
-                )
-            ],
-            responses={201: "Successfully created classrooms", 400: "Bad Request"},
+        operation_description="Upload Excel file to bulk create classrooms.",
+        manual_parameters=[
+            openapi.Parameter(
+                name='file',
+                in_=openapi.IN_FORM,
+                type=openapi.TYPE_FILE,
+                required=True,
+                description="Excel file (.xlsx) with class_name, section, class_teacher",
+            )
+        ],
+        responses={201: "Successfully created classrooms", 400: "Bad Request"},
     )
     def post(self, request, *args, **kwargs):
         excel_file = request.FILES.get('file')
@@ -77,28 +123,45 @@ class ClassroomBulkUploadAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        created = []
-        errors = []
+        df = df.dropna(subset=['class_name', 'section'])
+        df["class_name"] = df["class_name"].astype(str).str.strip().str.lower()
+        df["section"] = df["section"].astype(str).str.strip().str.capitalize()
 
-        for index, row in df.iterrows():
-            class_name = str(row.get('class_name')).strip().lower()
-            section = str(row.get('section')).strip().capitalize()
+        df.drop_duplicates(subset=["class_name", "section"], inplace=True)
 
-            if Classroom.objects.filter(school=school, class_name=class_name, section=section).exists():
-                errors.append(
-                    f"Row {index+2}: Classroom {class_name}-{section} already exists.")
-                continue
+        class_names = df["class_name"].unique()
+        sections = df["section"].unique()
 
-            Classroom.objects.create(
+        existing = Classroom.objects.filter(
+            school=school,
+            class_name__in=class_names,
+            section__in=sections,
+        ).values_list("class_name", "section")
+
+        existing_set = set((class_name.lower(), section.capitalize())
+                           for class_name, section in existing)
+
+        df["exists"] = df.apply(
+            lambda row: (row["class_name"], row["section"]) in existing_set,
+            axis=1
+        )
+        df_new = df[~df["exists"]]
+
+        classroom_objects = [
+            Classroom(
                 school=school,
-                class_name=class_name,
-                section=section,
-                class_teacher=None
+                class_name=row["class_name"],
+                section=row["section"],
             )
-            created.append(f"{class_name}-{section}")
+            for _, row in df_new.iterrows()
+        ]
+        if classroom_objects:
+            Classroom.objects.bulk_create(classroom_objects)
 
-        return Response({
-            'message': 'Upload processed.',
-            'created': created,
-            'errors': errors,
-        }, status=status.HTTP_201_CREATED if created else status.HTTP_400_BAD_REQUEST)
+        return send_response(
+            data={
+                "created": df_new[["class_name", "section"]].values.tolist(),
+                "skipped": df[df["exists"]][["class_name", "section"]].values.tolist(),
+            },
+            message=ResponseMessages.DATA_FETCH_SUCCESS,
+        )
