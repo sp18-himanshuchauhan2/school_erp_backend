@@ -8,7 +8,7 @@ from teachers.models import Teacher
 
 
 class StudentAttendanceAdmin(admin.ModelAdmin):
-    list_display = ('student', 'classroom', 'date', 'status')
+    list_display = ('classroom', 'student', 'date', 'status')
     list_filter = ('date', 'status')
 
     def get_queryset(self, request):

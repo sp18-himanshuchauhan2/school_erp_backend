@@ -8,8 +8,8 @@ from django.core.exceptions import ValidationError
 
 
 class StudentAttendance(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     date = models.DateField()
     status = models.CharField(max_length=10, choices=[
                               ('P', 'Present'), ('A', 'Absent')])

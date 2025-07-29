@@ -11,6 +11,15 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
+    def validate(self, data):
+        request = self.context['request']
+        curr_user = request.user
+
+        if curr_user.role == 'SCHOOL_ADMIN':
+            if data.get('role') == "MAIN_ADMIN":
+                raise serializers.ValidationError("You are not allowed to create a Main Admin user.")
+        return data
+
     def create(self, validated_data):
         request = self.context['request']
         school = request.user.school
