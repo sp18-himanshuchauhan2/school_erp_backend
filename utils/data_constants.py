@@ -48,4 +48,5 @@ class ResponseMessages:
     LEAVE_TYPE_CREATE_FAILED = "Leave type create failed"
     LEAVE_TYPE_UPDATE = "Leave type updated successfully"
     LEAVE_TYPE_UPDATE_FAILED = "Leave type update failed"
+    TOKEN_REFRESH_SUCCESS = "Token refreshed successfully"
     
