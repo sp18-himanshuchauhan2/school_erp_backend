@@ -3,13 +3,12 @@ from students.models import Student
 from classrooms.models import Classroom
 from teachers.models import Teacher
 from django.core.exceptions import ValidationError
-
 # Create your models here.
 
 
 class StudentAttendance(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     date = models.DateField()
     status = models.CharField(max_length=10, choices=[
                               ('P', 'Present'), ('A', 'Absent')])
