@@ -3,13 +3,13 @@ from .views import user as user_views
 from classrooms import views as classroom_views
 from subjects.views import subject as subject_views, classroom_subject as classroom_subject_views
 from teachers import views as teacher_views
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .views import CustomTokenObtainPairView, CustomTokenRefreshView 
 from students.views import StudentListCreateAPIView, StudentRetrieveUpdateDeleteAPIView
 
 urlpatterns = [
     # JWT Auth
-    path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
 
     # Users
     path('users/', user_views.ListCreateUsersView.as_view(),
