@@ -11,7 +11,7 @@ class FeeCategory(models.Model):
     """Types of fees: Tuition, Transport, Exam, Admission, etc."""
 
     school = models.ForeignKey(School, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
 
     class Meta:
@@ -65,7 +65,7 @@ class StudentFee(models.Model):
         max_digits=10, decimal_places=2, default=0.0)
     final_amount = models.DecimalField(max_digits=10, decimal_places=2)
     is_paid = models.BooleanField(default=False)
-    paid_at = models.DateTimeField(null=True, blank=True)
+    paid_date = models.DateField(null=True, blank=True)
 
     class Meta:
         unique_together = ('student', 'fee_structure', 'month')
@@ -74,8 +74,9 @@ class StudentFee(models.Model):
         if self.fee_structure.fee_type == 'monthly' and not self.month:
             raise ValidationError("Month is required for monthly fees.")
         if self.fee_structure.fee_type != 'monthly' and self.month:
-            raise ValidationError("Month should be empty for non-monthly fees.")
-        
+            raise ValidationError(
+                "Month should be empty for non-monthly fees.")
+
         if self.student.classroom != self.fee_structure.classroom:
             raise ValidationError(
                 f"Selected student is not associated with the classroom '{self.fee_structure.classroom}' in the FeeStructure."
@@ -90,9 +91,20 @@ class Payment(models.Model):
 
     fee = models.ForeignKey(StudentFee, on_delete=models.CASCADE)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_date = models.DateTimeField(auto_now_add=True)
     payment_mode = models.CharField(max_length=50)
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
+    transaction_date = models.DateField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['transaction_id'], name='unique_transaction_id')
+        ]
+
+    def save(self, *args, **kwargs):
+        if not self.transaction_date and self.fee.paid_date:
+            self.transaction_date = self.fee.paid_date
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.fee.student} - ₹{self.amount_paid} on {self.payment_date.date()}"
+        return f"{self.fee.student} - ₹{self.amount_paid} on {self.transaction_date}"
