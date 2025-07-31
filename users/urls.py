@@ -6,12 +6,18 @@ from teachers import views as teacher_views
 from .views import CustomTokenObtainPairView, CustomTokenRefreshView
 from students.views import StudentListCreateAPIView, StudentRetrieveUpdateDeleteAPIView
 from exams.views import (
-    ExamListCreateAPIView,
-    ExamSubjectListCreateAPIView,
-    ExamResultListCreateAPIView,
-    ExamRetrieveUpdateDeleteAPIView,
-    ExamSubjectRetrieveUpdateDeleteAPIView,
-    ExamResultRetrieveUpdateDeleteAPIView
+    ExamListCreateAPIView, ExamSubjectListCreateAPIView,
+    ExamResultListCreateAPIView, ExamRetrieveUpdateDeleteAPIView,
+    ExamSubjectRetrieveUpdateDeleteAPIView, ExamResultRetrieveUpdateDeleteAPIView
+)
+from attendances.views import (
+    StudentAttendanceListCreateAPIView, TeacherAttendanceListCreateAPIView
+)
+from fees.views import (
+    FeeCategoryListCreateAPIView, FeeStructureListCreateAPIView,
+    StudentFeeListCreateAPIView, PaymentListCreateAPIView,
+    FeeCategoryRetrieveUpdateDeleteAPIView, FeeStructureRetrieveUpdateDeleteAPIView,
+    StudentFeeRetrieveUpdateDeleteAPIView, PaymentRetrieveUpdateDeleteAPIView
 )
 
 urlpatterns = [
@@ -73,5 +79,26 @@ urlpatterns = [
          name='exam-result-list-create'),
     path('exam-results/<int:pk>/',
          ExamResultRetrieveUpdateDeleteAPIView.as_view(), name='exam-result-detail'),
+
+    # fees
+    path('fee/category/', FeeCategoryListCreateAPIView.as_view(),
+         name='fee-category'),
+    path('fee/category/<int:pk>/', FeeCategoryRetrieveUpdateDeleteAPIView.as_view(),
+         name='fee-category-update'),
+
+    path('fee/structure/', FeeStructureListCreateAPIView.as_view(),
+         name='fee-structure'),
+    path('fee/structure/<int:pk>/', FeeStructureRetrieveUpdateDeleteAPIView.as_view(),
+         name='fee-structure-update'),
+
+    path('fee/student/', StudentFeeListCreateAPIView.as_view(),
+         name='fee-student'),
+    path('fee/student/<int:pk>/', StudentFeeRetrieveUpdateDeleteAPIView.as_view(),
+         name='fee-student-update'),
+
+    path('fee/payment/', PaymentListCreateAPIView.as_view(),
+         name='fee-payment'),
+    path('fee/payment/<int:pk>/', PaymentRetrieveUpdateDeleteAPIView.as_view(),
+         name='fee-payment-update'),
 
 ]
