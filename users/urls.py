@@ -11,7 +11,9 @@ from exams.views import (
     ExamSubjectRetrieveUpdateDeleteAPIView, ExamResultRetrieveUpdateDeleteAPIView
 )
 from attendances.views import (
-    StudentAttendanceListCreateAPIView, TeacherAttendanceListCreateAPIView
+    StudentAttendanceListCreateAPIView, TeacherAttendanceListCreateAPIView,
+    StudentAttendanceRetrieveUpdateDeleteAPIView,
+    TeacherAttendanceRetrieveUpdateDeleteAPIView
 )
 from fees.views import (
     FeeCategoryListCreateAPIView, FeeStructureListCreateAPIView,
@@ -100,5 +102,16 @@ urlpatterns = [
          name='fee-payment'),
     path('fee/payment/<int:pk>/', PaymentRetrieveUpdateDeleteAPIView.as_view(),
          name='fee-payment-update'),
+
+    # attendance
+    path('student-attendance/', StudentAttendanceListCreateAPIView.as_view(),
+         name='student-attendance'),
+    path('student-attendance/<int:pk>/', StudentAttendanceRetrieveUpdateDeleteAPIView.as_view(),
+         name='student-attendance-update'),
+
+    path('teacher-attendance/', TeacherAttendanceListCreateAPIView.as_view(),
+         name='teacher-attendance'),
+    path('teacher-attendance/<int:pk>/', TeacherAttendanceRetrieveUpdateDeleteAPIView.as_view(),
+         name='teacher-attendance-update'),
 
 ]
