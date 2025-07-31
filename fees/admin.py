@@ -49,7 +49,7 @@ class FeeStructureAdmin(admin.ModelAdmin):
 @admin.register(StudentFee)
 class StudentFeeAdmin(admin.ModelAdmin):
     list_display = ('student', 'fee_structure', 'month',
-                    'final_amount', 'is_paid', 'paid_at')
+                    'final_amount', 'is_paid', 'paid_date')
     list_filter = ('is_paid', 'month')
     search_fields = ('student__user__first_name',
                      'fee_structure__category__name')
@@ -73,11 +73,11 @@ class StudentFeeAdmin(admin.ModelAdmin):
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ('fee', 'amount_paid', 'payment_date',
-                    'payment_mode', 'transaction_id')
+    list_display = ('fee', 'amount_paid', 'payment_mode',
+                    'transaction_id', 'transaction_date')
     search_fields = ('fee__student__user__first_name',
                      'payment_mode', 'transaction_id')
-    list_filter = ('payment_mode', 'payment_date')
+    list_filter = ('payment_mode', 'transaction_date')
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
