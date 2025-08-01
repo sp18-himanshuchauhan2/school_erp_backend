@@ -10,6 +10,7 @@ from utils.data_constants import ResponseMessages
 from rest_framework.exceptions import NotFound
 from classrooms.models import Classroom
 from rest_framework.permissions import IsAuthenticated
+from school_erp_backend.permissions import IsSchoolAdmin
 from django.shortcuts import get_object_or_404
 
 
@@ -17,7 +18,7 @@ from django.shortcuts import get_object_or_404
 
 
 class ExamListCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request):
         school = request.user.school
@@ -62,7 +63,7 @@ class ExamListCreateAPIView(APIView):
 
 
 class ExamRetrieveUpdateDeleteAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsSchoolAdmin]
 
     def get_object(self, pk, school):
         try:
@@ -121,7 +122,7 @@ class ExamRetrieveUpdateDeleteAPIView(APIView):
 
 
 class ExamSubjectListCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request):
         school = request.user.school
@@ -197,7 +198,7 @@ class ExamSubjectListCreateAPIView(APIView):
 
 
 class ExamSubjectRetrieveUpdateDeleteAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsSchoolAdmin]
 
     def get_object(self, pk, school):
         try:
@@ -262,7 +263,7 @@ class ExamSubjectRetrieveUpdateDeleteAPIView(APIView):
 
 
 class ExamResultListCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request):
         school = request.user.school
@@ -314,7 +315,7 @@ class ExamResultListCreateAPIView(APIView):
 
 
 class ExamResultRetrieveUpdateDeleteAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsSchoolAdmin]
 
     def get_object(self, pk, school):
         result = ExamResult.objects.filter(

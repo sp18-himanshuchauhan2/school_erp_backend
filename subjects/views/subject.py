@@ -8,11 +8,12 @@ from utils.restful_response import send_response
 import openpyxl
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from school_erp_backend.permissions import IsSchoolAdmin
 
 
 class SubjectListCreateView(generics.ListCreateAPIView):
     serializer_class = SubjectSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get_queryset(self):
         return Subject.objects.filter(school=self.request.user.school)
@@ -20,7 +21,7 @@ class SubjectListCreateView(generics.ListCreateAPIView):
 
 class SubjectDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SubjectSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get_queryset(self):
         return Subject.objects.filter(school=self.request.user.school)
@@ -28,7 +29,7 @@ class SubjectDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class SubjectBulkUploadView(APIView):
     parser_classes = [MultiPartParser, FormParser]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     @swagger_auto_schema(
         operation_description="Upload Excel file to bulk create classrooms.",

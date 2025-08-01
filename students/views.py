@@ -11,11 +11,15 @@ from drf_yasg.utils import swagger_auto_schema
 from utils.restful_response import send_response
 from utils.data_constants import ResponseMessages
 from rest_framework.pagination import PageNumberPagination
+from school_erp_backend.permissions import IsSchoolAdmin
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
 
 class StudentListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsSchoolAdmin]
+
     def get(self, request):
         school = request.user.school
         students = Student.objects.filter(user__school=school)
@@ -85,6 +89,8 @@ class StudentListCreateAPIView(APIView):
 
 
 class StudentRetrieveUpdateDeleteAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsSchoolAdmin]
+
     def get_object(self, pk, user):
         if user.role == 'SCHOOL_ADMIN':
             return get_object_or_404(Student, pk=pk, user__school=user.school)
