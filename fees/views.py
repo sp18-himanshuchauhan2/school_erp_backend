@@ -70,15 +70,24 @@ class FeeCategoryRetrieveUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         obj = self.get_object(pk, request.user)
         if not obj:
-            return send_response(message="Not found", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
 
         serializer = FeeCategorySerializer(obj)
-        return send_response(data=serializer.data, message=ResponseMessages.DATA_FETCH_SUCCESS)
+        return send_response(
+            data=serializer.data,
+            message=ResponseMessages.DATA_FETCH_SUCCESS
+        )
 
     def put(self, request, pk):
         obj = self.get_object(pk, request.user)
         if not obj:
-            return send_response(message="Not found", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
 
         data = request.data.copy()
         if not request.user.is_superuser:
@@ -87,15 +96,27 @@ class FeeCategoryRetrieveUpdateDeleteAPIView(APIView):
         serializer = FeeCategorySerializer(obj, data=data)
         if serializer.is_valid():
             serializer.save()
-            return send_response(data=serializer.data, message=ResponseMessages.DATA_UPDATE_SUCCESS)
-        return send_response(data=serializer.errors, message=ResponseMessages.DATA_UPDATE_FAILED, status_code=400)
+            return send_response(
+                data=serializer.data,
+                message=ResponseMessages.DATA_UPDATE_SUCCESS
+            )
+        return send_response(
+            data=serializer.errors,
+            message=ResponseMessages.DATA_UPDATE_FAILED,
+            status_code=400
+        )
 
     def delete(self, request, pk):
         obj = self.get_object(pk, request.user)
         if not obj:
-            return send_response(message="Not found", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
         obj.delete()
-        return send_response(message=ResponseMessages.RECORD_DELETED)
+        return send_response(
+            message=ResponseMessages.RECORD_DELETED
+        )
 
 
 class FeeStructureListCreateAPIView(APIView):
@@ -103,8 +124,11 @@ class FeeStructureListCreateAPIView(APIView):
 
     def get(self, request):
         school = get_user_school(request.user)
-        qs = FeeStructure.objects.all(
-        ) if request.user.is_superuser else FeeStructure.objects.filter(classroom__school=school)
+        if request.user.is_superuser:
+            qs = FeeStructure.objects.all()
+        else:
+            qs = FeeStructure.objects.filter(classroom__school=school)
+
         serializer = FeeStructureSerializer(qs, many=True)
         return send_response(
             data=serializer.data,
@@ -158,27 +182,49 @@ class FeeStructureRetrieveUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         obj = self.get_object(pk, request.user)
         if not obj:
-            return send_response(message="Not found", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
         serializer = FeeStructureSerializer(obj)
-        return send_response(data=serializer.data, message=ResponseMessages.DATA_FETCH_SUCCESS)
+        return send_response(
+            data=serializer.data,
+            message=ResponseMessages.DATA_FETCH_SUCCESS,
+            status_code=status.HTTP_200_OK
+        )
 
     def put(self, request, pk):
         obj = self.get_object(pk, request.user)
         if not obj:
-            return send_response(message="Not found", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
 
         serializer = FeeStructureSerializer(obj, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return send_response(data=serializer.data, message=ResponseMessages.DATA_UPDATE_SUCCESS)
-        return send_response(data=serializer.errors, message=ResponseMessages.DATA_UPDATE_FAILED, status_code=400)
+            return send_response(
+                data=serializer.data,
+                message=ResponseMessages.DATA_UPDATE_SUCCESS
+            )
+        return send_response(
+            data=serializer.errors,
+            message=ResponseMessages.DATA_UPDATE_FAILED,
+            status_code=400
+        )
 
     def delete(self, request, pk):
         obj = self.get_object(pk, request.user)
         if not obj:
-            return send_response(message="Not found", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
         obj.delete()
-        return send_response(message=ResponseMessages.RECORD_DELETED)
+        return send_response(
+            message=ResponseMessages.RECORD_DELETED
+        )
 
 
 class StudentFeeListCreateAPIView(APIView):
@@ -186,8 +232,11 @@ class StudentFeeListCreateAPIView(APIView):
 
     def get(self, request):
         school = get_user_school(request.user)
-        qs = StudentFee.objects.all() if request.user.is_superuser else StudentFee.objects.filter(
-            student__classroom__school=school)
+        if request.user.is_superuser:
+            qs = StudentFee.objects.all()
+        else:
+            qs = StudentFee.objects.filter(student__classroom__school=school)
+
         serializer = StudentFeeSerializer(qs, many=True)
         return send_response(
             data=serializer.data,
@@ -243,27 +292,48 @@ class StudentFeeRetrieveUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         obj = self.get_object(pk, request.user)
         if not obj:
-            return send_response(message="Not found", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
         serializer = StudentFeeSerializer(obj)
-        return send_response(data=serializer.data, message=ResponseMessages.DATA_FETCH_SUCCESS)
+        return send_response(
+            data=serializer.data,
+            message=ResponseMessages.DATA_FETCH_SUCCESS
+        )
 
     def put(self, request, pk):
         obj = self.get_object(pk, request.user)
         if not obj:
-            return send_response(message="Not found", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
 
         serializer = StudentFeeSerializer(obj, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return send_response(data=serializer.data, message=ResponseMessages.DATA_UPDATE_SUCCESS)
-        return send_response(data=serializer.errors, message=ResponseMessages.DATA_UPDATE_FAILED, status_code=400)
+            return send_response(
+                data=serializer.data,
+                message=ResponseMessages.DATA_UPDATE_SUCCESS
+            )
+        return send_response(
+            data=serializer.errors,
+            message=ResponseMessages.DATA_UPDATE_FAILED,
+            status_code=400
+        )
 
     def delete(self, request, pk):
         obj = self.get_object(pk, request.user)
         if not obj:
-            return send_response(message="Not found", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
         obj.delete()
-        return send_response(message=ResponseMessages.RECORD_DELETED)
+        return send_response(
+            message=ResponseMessages.RECORD_DELETED
+        )
 
 
 class PaymentListCreateAPIView(APIView):
@@ -271,8 +341,11 @@ class PaymentListCreateAPIView(APIView):
 
     def get(self, request):
         school = get_user_school(request.user)
-        qs = Payment.objects.all() if request.user.is_superuser else Payment.objects.filter(
-            fee__student__classroom__school=school)
+        if request.user.is_superuser:
+            qs = Payment.objects.all()
+        else:
+            qs = Payment.objects.filter(fee__student__classroom__school=school)
+
         serializer = PaymentSerializer(qs, many=True)
         return send_response(
             data=serializer.data,
@@ -323,9 +396,15 @@ class PaymentRetrieveUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         obj = self.get_object(pk, request.user)
         if not obj:
-            return send_response(message="Not found", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
         serializer = PaymentSerializer(obj)
-        return send_response(data=serializer.data, message=ResponseMessages.DATA_FETCH_SUCCESS)
+        return send_response(
+            data=serializer.data,
+            message=ResponseMessages.DATA_FETCH_SUCCESS
+        )
 
     def put(self, request, pk):
         obj = self.get_object(pk, request.user)
@@ -335,12 +414,24 @@ class PaymentRetrieveUpdateDeleteAPIView(APIView):
         serializer = PaymentSerializer(obj, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return send_response(data=serializer.data, message=ResponseMessages.DATA_UPDATE_SUCCESS)
-        return send_response(data=serializer.errors, message=ResponseMessages.DATA_UPDATE_FAILED, status_code=400)
+            return send_response(
+                data=serializer.data,
+                message=ResponseMessages.DATA_UPDATE_SUCCESS
+            )
+        return send_response(
+            data=serializer.errors,
+            message=ResponseMessages.DATA_UPDATE_FAILED,
+            status_code=400
+        )
 
     def delete(self, request, pk):
         obj = self.get_object(pk, request.user)
         if not obj:
-            return send_response(message="Not found", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
         obj.delete()
-        return send_response(message=ResponseMessages.RECORD_DELETED)
+        return send_response(
+            message=ResponseMessages.RECORD_DELETED
+        )

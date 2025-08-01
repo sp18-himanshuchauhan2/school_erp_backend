@@ -36,7 +36,10 @@ class StudentAttendanceListCreateAPIView(APIView):
             student = serializer.validated_data['student']
             classroom = serializer.validated_data['classroom']
 
-            if not request.user.is_superuser and (student.user.school != request.user.school or classroom.school != request.user.school):
+            if not request.user.is_superuser and (
+                student.user.school != request.user.school or
+                classroom.school != request.user.school
+            ):
                 return send_response(
                     message='You are not authorized to add attendance for this student/classroom.',
                     status_code=status.HTTP_403_FORBIDDEN
@@ -71,15 +74,25 @@ class StudentAttendanceRetrieveUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         attendance = self.get_object(pk, request.user)
         if attendance is None:
-            return send_response(message="Attendance not found or unauthorized.", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Attendance not found or unauthorized.",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
 
         serializer = StudentAttendanceSerializer(attendance)
-        return send_response(data=serializer.data, message=ResponseMessages.DATA_FETCH_SUCCESS, status_code=status.HTTP_200_OK)
+        return send_response(
+            data=serializer.data,
+            message=ResponseMessages.DATA_FETCH_SUCCESS,
+            status_code=status.HTTP_200_OK
+        )
 
     def put(self, request, pk):
         attendance = self.get_object(pk, request.user)
         if attendance is None:
-            return send_response(message="Attendance not found or unauthorized.", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Attendance not found or unauthorized.",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
 
         serializer = StudentAttendanceSerializer(attendance, data=request.data)
         if serializer.is_valid():
@@ -89,20 +102,37 @@ class StudentAttendanceRetrieveUpdateDeleteAPIView(APIView):
             if not request.user.is_superuser and (
                 student.user.school != request.user.school or classroom.school != request.user.school
             ):
-                return send_response(message="Unauthorized update.", status_code=status.HTTP_403_FORBIDDEN)
+                return send_response(
+                    message="Unauthorized update.",
+                    status_code=status.HTTP_403_FORBIDDEN
+                )
 
             serializer.save()
-            return send_response(data=serializer.data, message=ResponseMessages.DATA_UPDATE_SUCCESS, status_code=status.HTTP_200_OK)
+            return send_response(
+                data=serializer.data,
+                message=ResponseMessages.DATA_UPDATE_SUCCESS,
+                status_code=status.HTTP_200_OK
+            )
 
-        return send_response(data=serializer.errors, message=ResponseMessages.DATA_UPDATE_FAILED, status_code=status.HTTP_400_BAD_REQUEST)
+        return send_response(
+            data=serializer.errors,
+            message=ResponseMessages.DATA_UPDATE_FAILED,
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
 
     def delete(self, request, pk):
         attendance = self.get_object(pk, request.user)
         if attendance is None:
-            return send_response(message="Attendance not found or unauthorized.", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Attendance not found or unauthorized.",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
 
         attendance.delete()
-        return send_response(message=ResponseMessages.RECORD_DELETED, status_code=status.HTTP_204_NO_CONTENT)
+        return send_response(
+            message=ResponseMessages.RECORD_DELETED,
+            status_code=status.HTTP_204_NO_CONTENT
+        )
 
 
 class TeacherAttendanceListCreateAPIView(APIView):
@@ -163,32 +193,59 @@ class TeacherAttendanceRetrieveUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         attendance = self.get_object(pk, request.user)
         if attendance is None:
-            return send_response(message="Attendance not found or unauthorized.", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Attendance not found or unauthorized.",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
 
         serializer = TeacherAttendanceSerializer(attendance)
-        return send_response(data=serializer.data, message=ResponseMessages.DATA_FETCH_SUCCESS, status_code=status.HTTP_200_OK)
+        return send_response(
+            data=serializer.data,
+            message=ResponseMessages.DATA_FETCH_SUCCESS,
+            status_code=status.HTTP_200_OK
+        )
 
     def put(self, request, pk):
         attendance = self.get_object(pk, request.user)
         if attendance is None:
-            return send_response(message="Attendance not found or unauthorized.", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Attendance not found or unauthorized.",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
 
         serializer = TeacherAttendanceSerializer(attendance, data=request.data)
         if serializer.is_valid():
             teacher = serializer.validated_data['teacher']
 
             if not request.user.is_superuser and teacher.user.school != request.user.school:
-                return send_response(message="Unauthorized update.", status_code=status.HTTP_403_FORBIDDEN)
+                return send_response(
+                    message="Unauthorized update.",
+                    status_code=status.HTTP_403_FORBIDDEN
+                )
 
             serializer.save()
-            return send_response(data=serializer.data, message=ResponseMessages.DATA_UPDATE_SUCCESS, status_code=status.HTTP_200_OK)
+            return send_response(
+                data=serializer.data,
+                message=ResponseMessages.DATA_UPDATE_SUCCESS,
+                status_code=status.HTTP_200_OK
+            )
 
-        return send_response(data=serializer.errors, message=ResponseMessages.DATA_UPDATE_FAILED, status_code=status.HTTP_400_BAD_REQUEST)
+        return send_response(
+            data=serializer.errors,
+            message=ResponseMessages.DATA_UPDATE_FAILED,
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
 
     def delete(self, request, pk):
         attendance = self.get_object(pk, request.user)
         if attendance is None:
-            return send_response(message="Attendance not found or unauthorized.", status_code=status.HTTP_404_NOT_FOUND)
+            return send_response(
+                message="Attendance not found or unauthorized.",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
 
         attendance.delete()
-        return send_response(message=ResponseMessages.RECORD_DELETED, status_code=status.HTTP_204_NO_CONTENT)
+        return send_response(
+            message=ResponseMessages.RECORD_DELETED,
+            status_code=status.HTTP_204_NO_CONTENT
+        )

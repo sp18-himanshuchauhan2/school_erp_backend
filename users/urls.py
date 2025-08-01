@@ -1,7 +1,10 @@
 from django.urls import path
 from .views import user as user_views
 from classrooms import views as classroom_views
-from subjects.views import subject as subject_views, classroom_subject as classroom_subject_views
+from subjects.views import (
+    subject as subject_views,
+    classroom_subject as classroom_subject_views
+)
 from teachers import views as teacher_views
 from .views import CustomTokenObtainPairView, CustomTokenRefreshView
 from students.views import StudentListCreateAPIView, StudentRetrieveUpdateDeleteAPIView

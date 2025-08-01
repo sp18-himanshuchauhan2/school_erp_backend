@@ -148,7 +148,10 @@ class ExamSubjectListCreateAPIView(APIView):
             status_code=status.HTTP_200_OK
         )
 
-    @swagger_auto_schema(request_body=ExamSubjectSerializer, responses={201: ExamSubjectSerializer()})
+    @swagger_auto_schema(
+        request_body=ExamSubjectSerializer,
+        responses={201: ExamSubjectSerializer()}
+    )
     def post(self, request):
         exam_id = request.data.get("exam")
         classroom_id = request.data.get("classroom")
@@ -272,7 +275,10 @@ class ExamResultListCreateAPIView(APIView):
             status_code=status.HTTP_200_OK
         )
 
-    @swagger_auto_schema(request_body=ExamResultSerializer, responses={201: ExamResultSerializer()})
+    @swagger_auto_schema(
+        request_body=ExamResultSerializer,
+        responses={201: ExamResultSerializer()}
+    )
     def post(self, request):
         school = request.user.school
         exam_subject_id = request.data.get("exam_subject")
@@ -315,10 +321,10 @@ class ExamResultRetrieveUpdateDeleteAPIView(APIView):
             id=pk,
             exam_subject__exam__classrooms__school=school
         ).first()
-        
+
         if not result:
             raise NotFound(detail="Exam Result not found.")
-        
+
         return result
 
     def get(self, request, pk):
