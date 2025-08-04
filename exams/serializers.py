@@ -29,6 +29,8 @@ class ExamResultSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def validate(self, data):
+        data = super().validate(data)
+        
         student = data.get('student')
         exam_subject = data.get('exam_subject')
 
