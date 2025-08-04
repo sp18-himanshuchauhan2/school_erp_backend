@@ -3,6 +3,7 @@ from classrooms.models import Classroom
 from students.models import Student
 from schools.models import School
 from django.core.exceptions import ValidationError
+import calendar
 
 # Create your models here.
 
@@ -46,10 +47,7 @@ class FeeStructure(models.Model):
 class StudentFee(models.Model):
     """Fee assigned to student based on structure. Tracks monthly fees too."""
 
-    MONTH_CHOICES = [(month[:3], month) for month in [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ]]
+    MONTH_CHOICES = [(month[:3], month) for month in calendar.month_name if month]
 
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     fee_structure = models.ForeignKey(FeeStructure, on_delete=models.CASCADE)
