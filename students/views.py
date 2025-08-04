@@ -30,7 +30,8 @@ class StudentListCreateAPIView(APIView):
         user_paginator = PageNumberPagination()
         # paginator.page_size = 5
 
-        student_results = student_paginator.paginate_queryset(students, request)
+        student_results = student_paginator.paginate_queryset(
+            students, request)
         user_results = user_paginator.paginate_queryset(users, request)
 
         student_data = StudentSerializer(student_results, many=True).data
@@ -59,7 +60,10 @@ class StudentListCreateAPIView(APIView):
             status_code=status.HTTP_200_OK
         )
 
-    @swagger_auto_schema(request_body=StudentSerializer, responses={201: StudentSerializer()})
+    @swagger_auto_schema(
+        request_body=StudentSerializer,
+        responses={201: StudentSerializer()}
+    )
     def post(self, request):
         serializer = StudentSerializer(
             data=request.data, context={'request': request})
@@ -91,7 +95,10 @@ class StudentRetrieveUpdateDeleteAPIView(APIView):
         serializer = StudentSerializer(student)
         return Response(serializer.data)
 
-    @swagger_auto_schema(request_body=StudentSerializer, responses={200: StudentSerializer()})
+    @swagger_auto_schema(
+        request_body=StudentSerializer,
+        responses={200: StudentSerializer()}
+    )
     def put(self, request, pk):
         student = self.get_object(pk, request.user)
         serializer = StudentSerializer(
@@ -99,17 +106,30 @@ class StudentRetrieveUpdateDeleteAPIView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
-    @swagger_auto_schema(request_body=StudentSerializer, responses={200: StudentSerializer()})
+    @swagger_auto_schema(
+        request_body=StudentSerializer,
+        responses={200: StudentSerializer()}
+    )
     def patch(self, request, pk):
         student = self.get_object(pk, request.user)
         serializer = StudentSerializer(
-            student, data=request.data, partial=True, context={'request': request})
+            student,
+            data=request.data,
+            partial=True,
+            context={'request': request}
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     def delete(self, request, pk):
         student = self.get_object(pk, request.user)

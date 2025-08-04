@@ -20,17 +20,29 @@ class TeacherListCreateView(generics.ListCreateAPIView):
         school = request.user.school
         teachers = self.get_queryset()
         teachers_data = TeacherSerializer(
-            teachers, many=True, context={'request': request}).data
+            teachers, 
+            many=True, 
+            context={'request': request}
+        ).data
 
         teachers_users_id = teachers.values_list('user_id', flat=True)
         user_without_profile = User.objects.filter(
-            role='TEACHER', school=school).exclude(id__in=teachers_users_id)
-        user_data = UserListSerializer(user_without_profile, many=True, context={
-                                       'request': request}).data
-        return Response({
-            "teachers": teachers_data,
-            "users_with_teacher_role": user_data
-        }, status=status.HTTP_200_OK)
+            role='TEACHER', 
+            school=school
+        ).exclude(id__in=teachers_users_id)
+
+        user_data = UserListSerializer(
+            user_without_profile, 
+            many=True, 
+            context={'request': request}
+        ).data
+        return Response(
+            {
+                "teachers": teachers_data,
+                "users_with_teacher_role": user_data
+            }, 
+            status=status.HTTP_200_OK
+        )
 
 
 class TeacherRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):

@@ -5,20 +5,24 @@ from classrooms.models import Classroom
 
 
 class ExamAdmin(admin.ModelAdmin):
-    list_display = ('title', 'classroom')
+    list_display = ('title', 'get_classrooms')
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'classroom':
+    def get_classrooms(self, obj):
+        return ", ".join([str(c) for c in obj.classrooms.all()])
+    get_classrooms.short_description = 'Classrooms'
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == 'classrooms':
             if request.user.is_superuser:
                 kwargs["queryset"] = Classroom.objects.all()
             else:
                 kwargs["queryset"] = Classroom.objects.filter(
                     school=request.user.school)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
 class ExamSubjectAdmin(admin.ModelAdmin):
-    list_display = ('exam', 'subject', 'total_marks')
+    list_display = ('exam', 'classroom', 'subject', 'total_marks')
 
 
 class ExamResultAdmin(admin.ModelAdmin):
