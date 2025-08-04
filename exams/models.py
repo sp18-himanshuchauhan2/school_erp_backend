@@ -21,6 +21,7 @@ class ExamSubject(models.Model):
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     total_marks = models.PositiveIntegerField(default=100)
+    exam_date = models.DateField(null=True, blank=True)
 
     class Meta:
         unique_together = ['exam', 'subject', 'classroom']
