@@ -1,3 +1,4 @@
+import uuid
 from rest_framework import serializers
 from ..models import User
 from django.contrib.auth.models import Group
@@ -10,6 +11,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True}
         }
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError(
+                "A user with this email already exists.")
+        return value
 
     def validate(self, data):
         request = self.context['request']
@@ -28,7 +35,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password')
         role = validated_data.get('role')
 
+        username = f"user_{uuid.uuid4().hex[:8]}"
+        while User.objects.filter(username=username).exists():
+            username = f"user_{uuid.uuid4().hex[:8]}"
+
         user = User(**validated_data)
+        user.username = username
         user.school = school
         user.set_password(password)
 
@@ -40,9 +52,9 @@ class UserCreateSerializer(serializers.ModelSerializer):
             try:
                 group = Group.objects.get(name=role.lower())
                 user.groups.add(group)
-                print(f"User added to group: {group.name}")
             except Group.DoesNotExist:
-                print(f"Group '{role}' does not exist — cannot assign group.")
+                pass
+
         return user
 
 
