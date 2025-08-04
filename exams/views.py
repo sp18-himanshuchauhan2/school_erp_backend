@@ -11,9 +11,6 @@ from rest_framework.exceptions import NotFound
 from classrooms.models import Classroom
 from rest_framework.permissions import IsAuthenticated
 from school_erp_backend.permissions import IsSchoolAdmin
-from django.shortcuts import get_object_or_404
-
-
 # Create your views here.
 
 

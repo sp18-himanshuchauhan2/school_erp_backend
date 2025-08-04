@@ -26,6 +26,9 @@ class ExamSubject(models.Model):
     class Meta:
         unique_together = ['exam', 'subject', 'classroom']
 
+    class Meta:
+        unique_together = ['exam', 'subject', 'classroom']
+
     def __str__(self):
         return f"{self.subject} - {self.exam} - {self.classroom}"
 

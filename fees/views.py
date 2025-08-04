@@ -10,7 +10,6 @@ from schools.models import School
 from classrooms.models import Classroom
 from students.models import Student
 from school_erp_backend.permissions import IsSchoolAdmin
-
 # Create your views here.
 
 

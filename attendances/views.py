@@ -9,7 +9,6 @@ from classrooms.models import Classroom
 from utils.restful_response import send_response
 from utils.data_constants import ResponseMessages
 from school_erp_backend.permissions import IsSchoolAdmin
-
 # Create your views here.
 
 
