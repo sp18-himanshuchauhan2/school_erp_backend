@@ -9,6 +9,7 @@ from rest_framework import status
 from users.models import User
 from schools.models import School
 from rest_framework.permissions import IsAuthenticated
+from school_erp_backend.permissions import IsSchoolAdmin
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from utils.restful_response import send_response
@@ -18,7 +19,7 @@ from utils.data_constants import ResponseMessages
 class ClassroomListCreateView(generics.ListCreateAPIView):
     queryset = Classroom.objects.all()
     serializer_class = ClassroomSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get_queryset(self):
         return Classroom.objects.filter(school=self.request.user.school)
@@ -48,7 +49,7 @@ class ClassroomListCreateView(generics.ListCreateAPIView):
 class ClassroomDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Classroom.objects.all()
     serializer_class = ClassroomSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get_queryset(self):
         return Classroom.objects.filter(school=self.request.user.school)
@@ -78,7 +79,7 @@ class ClassroomDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class ClassroomBulkUploadAPIView(APIView):
     parser_classes = [MultiPartParser]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     @swagger_auto_schema(
         operation_description="Upload Excel file to bulk create classrooms.",

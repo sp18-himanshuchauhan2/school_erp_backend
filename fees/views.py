@@ -9,7 +9,7 @@ from rest_framework import permissions, status
 from schools.models import School
 from classrooms.models import Classroom
 from students.models import Student
-
+from school_erp_backend.permissions import IsSchoolAdmin
 # Create your views here.
 
 
@@ -20,7 +20,7 @@ def get_user_school(user):
 
 
 class FeeCategoryListCreateAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request):
         school = get_user_school(request.user)
@@ -56,7 +56,7 @@ class FeeCategoryListCreateAPIView(APIView):
 
 
 class FeeCategoryRetrieveUpdateDeleteAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get_object(self, pk, user):
         school = get_user_school(user)
@@ -120,7 +120,7 @@ class FeeCategoryRetrieveUpdateDeleteAPIView(APIView):
 
 
 class FeeStructureListCreateAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request):
         school = get_user_school(request.user)
@@ -168,7 +168,7 @@ class FeeStructureListCreateAPIView(APIView):
 
 
 class FeeStructureRetrieveUpdateDeleteAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get_object(self, pk, user):
         school = get_user_school(user)
@@ -228,7 +228,7 @@ class FeeStructureRetrieveUpdateDeleteAPIView(APIView):
 
 
 class StudentFeeListCreateAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request):
         school = get_user_school(request.user)
@@ -278,7 +278,7 @@ class StudentFeeListCreateAPIView(APIView):
 
 
 class StudentFeeRetrieveUpdateDeleteAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get_object(self, pk, user):
         school = get_user_school(user)
@@ -337,7 +337,7 @@ class StudentFeeRetrieveUpdateDeleteAPIView(APIView):
 
 
 class PaymentListCreateAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request):
         school = get_user_school(request.user)
@@ -382,7 +382,7 @@ class PaymentListCreateAPIView(APIView):
 
 
 class PaymentRetrieveUpdateDeleteAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get_object(self, pk, user):
         school = get_user_school(user)

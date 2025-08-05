@@ -8,12 +8,12 @@ from teachers.models import Teacher
 from classrooms.models import Classroom
 from utils.restful_response import send_response
 from utils.data_constants import ResponseMessages
-
+from school_erp_backend.permissions import IsSchoolAdmin
 # Create your views here.
 
 
 class StudentAttendanceListCreateAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request):
         user = request.user
@@ -60,7 +60,7 @@ class StudentAttendanceListCreateAPIView(APIView):
 
 
 class StudentAttendanceRetrieveUpdateDeleteAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get_object(self, pk, user):
         try:
@@ -136,7 +136,7 @@ class StudentAttendanceRetrieveUpdateDeleteAPIView(APIView):
 
 
 class TeacherAttendanceListCreateAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request):
         user = request.user
@@ -179,7 +179,7 @@ class TeacherAttendanceListCreateAPIView(APIView):
 
 
 class TeacherAttendanceRetrieveUpdateDeleteAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsSchoolAdmin]
 
     def get_object(self, pk, user):
         try:

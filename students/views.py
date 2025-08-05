@@ -2,6 +2,9 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from attendances.models import StudentAttendance
+from exams.models import ExamSubject, ExamResult
+from exams.serializers import ExamResultSerializer
 from .models import Student
 from users.models import User
 from users.serializers import UserListSerializer
@@ -11,11 +14,19 @@ from drf_yasg.utils import swagger_auto_schema
 from utils.restful_response import send_response
 from utils.data_constants import ResponseMessages
 from rest_framework.pagination import PageNumberPagination
-
+from school_erp_backend.permissions import IsSchoolAdmin, IsStudent
+from rest_framework.permissions import IsAuthenticated
+from attendances.serializers import StudentAttendanceSerializer
+from fees.models import StudentFee
+from fees.serializers import StudentFeeSerializer
+from subjects.models import ClassroomSubject
+from subjects.serializers import ClassroomSubjectSerializer
 # Create your views here.
 
 
 class StudentListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsSchoolAdmin]
+
     def get(self, request):
         school = request.user.school
         students = Student.objects.filter(user__school=school)
@@ -85,6 +96,8 @@ class StudentListCreateAPIView(APIView):
 
 
 class StudentRetrieveUpdateDeleteAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsSchoolAdmin]
+
     def get_object(self, pk, user):
         if user.role == 'SCHOOL_ADMIN':
             return get_object_or_404(Student, pk=pk, user__school=user.school)
@@ -135,3 +148,97 @@ class StudentRetrieveUpdateDeleteAPIView(APIView):
         student = self.get_object(pk, request.user)
         student.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class StudentProfileAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def get(self, request):
+        student = Student.objects.get(user=request.user)
+        serializer = StudentSerializer(student)
+        return send_response(data=serializer.data)
+
+
+class ExamTimetableAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def get(self, request):
+        student = Student.objects.get(user=request.user)
+        exam_subjects = ExamSubject.objects.filter(classroom=student.classroom)
+        data = [{
+            "exam": es.exam.title,
+            "subject": es.subject.name,
+            "total_marks": es.total_marks,
+            "date": es.exam_date
+        } for es in exam_subjects]
+        return send_response(data=data)
+
+
+class StudentAttendanceAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def get(self, request):
+        student = Student.objects.get(user=request.user)
+        attendance = StudentAttendance.objects.filter(student=student)
+        serializer = StudentAttendanceSerializer(attendance, many=True)
+        return send_response(data=serializer.data)
+
+
+class StudentExamResultsAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def get(self, request):
+        student = Student.objects.get(user=request.user)
+        results = ExamResult.objects.filter(student=student)
+        serializer = ExamResultSerializer(results, many=True)
+        return send_response(data=serializer.data)
+
+
+class StudentFeeDetailsAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def get(self, request):
+        student = Student.objects.get(user=request.user)
+        fees = StudentFee.objects.filter(student=student)
+        serializer = StudentFeeSerializer(fees, many=True)
+        return send_response(data=serializer.data)
+
+
+class StudentClassroomSubjectsAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def get(self, request):
+        try:
+            student = Student.objects.get(user=request.user)
+        except Student.DoesNotExist:
+            return send_response(
+                message="Student profile not found.", 
+                status_code=404
+            )
+
+        classroom = student.classroom
+        subjects = ClassroomSubject.objects.filter(classroom=classroom)
+        serializer = ClassroomSubjectSerializer(subjects, many=True)
+        return send_response(data=serializer.data)
+
+
+class StudentReportCardAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def get(self, request):
+        student = Student.objects.get(user=request.user)
+        results = ExamResult.objects.filter(student=student)
+
+        report = {}
+        for result in results:
+            exam = result.exam_subject.exam.title
+            if exam not in report:
+                report[exam] = []
+            report[exam].append({
+                "subject": result.exam_subject.subject.name,
+                "marks": result.marks_obtained,
+                "total": result.exam_subject.total_marks,
+                "remarks": result.remarks
+            })
+
+        return send_response(data=report)

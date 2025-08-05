@@ -12,3 +12,10 @@ class TeacherSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         return super().update(instance, validated_data)
+    
+
+class TeacherProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
+        fields = '__all__'
+        read_only_fields = ['id', 'user']
