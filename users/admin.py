@@ -4,6 +4,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from schools.models import School
 from django.core.exceptions import ValidationError
 from .tasks import send_welcome_email_task
+from django.utils.crypto import get_random_string
 # Register your models here.
 
 
@@ -70,13 +71,17 @@ class UserAdmin(BaseUserAdmin):
         if request.user.role == 'MAIN_ADMIN' and obj.role == 'SCHOOL_ADMIN':
             obj.is_staff = True
 
+        if is_new:
+            raw_password = get_random_string(length=10)
+            obj.set_password(raw_password)
+
         super().save_model(request, obj, form, change)
 
         if is_new:
             send_welcome_email_task.delay(
                 obj.email, 
                 obj.name, 
-                obj.password, 
+                raw_password,
                 obj.role,
                 obj.school.name
             )
