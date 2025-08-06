@@ -3,7 +3,7 @@ from .models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from schools.models import School
 from django.core.exceptions import ValidationError
-
+from .tasks import send_welcome_email_task
 # Register your models here.
 
 
@@ -58,6 +58,8 @@ class UserAdmin(BaseUserAdmin):
         return super().changelist_view(request, extra_context=extra_context)
 
     def save_model(self, request, obj, form, change):
+        is_new = obj.pk is None
+
         if request.user.role == 'SCHOOL_ADMIN' and not request.user.is_superuser:
             obj.school = request.user.school
 
@@ -68,7 +70,16 @@ class UserAdmin(BaseUserAdmin):
         if request.user.role == 'MAIN_ADMIN' and obj.role == 'SCHOOL_ADMIN':
             obj.is_staff = True
 
-        return super().save_model(request, obj, form, change)
+        super().save_model(request, obj, form, change)
+
+        if is_new:
+            send_welcome_email_task.delay(
+                obj.email, 
+                obj.name, 
+                obj.password, 
+                obj.role,
+                obj.school.name
+            )
 
 
 admin.site.register(User, UserAdmin)
